@@ -21,7 +21,7 @@ QDRANT_PORT = 6333
 
 #load_dotenv()
 # ⚠️ Set your API key here (or better, in your terminal environment)
-os.environ["OPENAI_API_KEY"] = "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"
+os.environ["OPENAI_API_KEY"] = ""
 
 # --- INITIALIZATION ---
 app = FastAPI(title="Medical RAG API")
