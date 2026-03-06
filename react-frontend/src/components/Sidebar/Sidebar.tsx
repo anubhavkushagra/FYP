@@ -7,9 +7,10 @@ import { useChatStore } from '../../store/useChatStore';
 interface SidebarProps {
     isOpen: boolean;
     onClose: () => void;
+    onOpenSettings: () => void;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onOpenSettings }) => {
     const { chats, currentChatId, createNewChat, selectChat, deleteChat } = useChatStore();
 
     const handleNewChat = () => {
@@ -44,18 +45,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             {/* Sidebar Container */}
             <motion.div
                 className={clsx(
-                    "fixed md:static inset-y-0 left-0 z-50 w-[280px] bg-white border-r border-gray-100 flex flex-col shadow-xl md:shadow-none h-full transition-transform duration-300 ease-in-out",
+                    "fixed md:static inset-y-0 left-0 z-50 w-[280px] bg-white/70 backdrop-blur-xl border-r border-white/40 flex flex-col shadow-2xl md:shadow-none h-full transition-transform duration-300 ease-in-out",
                     !isOpen && "-translate-x-full md:translate-x-0"
                 )}
             >
                 {/* Header */}
-                <div className="p-5 border-b border-gray-50 flex items-center justify-between">
+                <div className="p-5 border-b border-white/40 flex items-center justify-between">
                     <div className="flex items-center gap-2 text-primary font-bold text-xl tracking-tight">
-                        <span>Mental Health Chatbot</span>
+                        <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">Medical AI</span>
                     </div>
                     <button
                         onClick={onClose}
-                        className="md:hidden p-1 text-gray-400 hover:text-gray-600 transition-colors"
+                        className="md:hidden p-1 text-gray-500 hover:text-gray-800 transition-colors"
                     >
                         <X size={20} />
                     </button>
@@ -90,8 +91,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                                 className={clsx(
                                     "group flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all duration-200 border border-transparent",
                                     currentChatId === chat.id
-                                        ? "bg-primary/5 text-primary border-primary/10 shadow-sm"
-                                        : "hover:bg-gray-50 text-gray-600 hover:text-gray-900"
+                                        ? "bg-white/60 text-primary border-white/80 shadow-sm backdrop-blur-md"
+                                        : "hover:bg-white/40 text-gray-600 hover:text-gray-900"
                                 )}
                                 onClick={() => handleSelectChat(chat.id)}
                             >
@@ -124,7 +125,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
                 {/* Footer */}
                 <div className="p-4 border-t border-gray-50 bg-gray-50/50">
-                    <button className="flex items-center gap-3 text-gray-500 hover:text-gray-800 hover:bg-gray-100 w-full p-2.5 rounded-lg transition-colors text-sm font-medium">
+                    <button
+                        onClick={onOpenSettings}
+                        className="flex items-center gap-3 text-gray-500 hover:text-gray-800 hover:bg-gray-100 w-full p-2.5 rounded-lg transition-colors text-sm font-medium"
+                    >
                         <Settings size={18} />
                         <span>Settings</span>
                     </button>

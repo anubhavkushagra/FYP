@@ -5,11 +5,15 @@ import type { Chat, Message } from '../types/chat';
 interface ChatState {
     chats: Chat[];
     currentChatId: string | null;
+    geminiApiKey: string;
+    patientData: string;
     createNewChat: () => void;
     selectChat: (id: string) => void;
     deleteChat: (id: string) => void;
     addMessage: (chatId: string, message: Message) => void;
     updateChatTitle: (chatId: string, title: string) => void;
+    setGeminiApiKey: (key: string) => void;
+    setPatientData: (data: string) => void;
 }
 
 export const useChatStore = create<ChatState>()(
@@ -17,6 +21,8 @@ export const useChatStore = create<ChatState>()(
         (set, _get) => ({
             chats: [],
             currentChatId: null,
+            geminiApiKey: '',
+            patientData: '',
 
             createNewChat: () => {
                 const newChat: Chat = {
@@ -72,7 +78,10 @@ export const useChatStore = create<ChatState>()(
                     };
                     return { chats: updatedChats };
                 });
-            }
+            },
+
+            setGeminiApiKey: (key: string) => set({ geminiApiKey: key }),
+            setPatientData: (data: string) => set({ patientData: data }),
         }),
         {
             name: 'mental-health-bot-storage',

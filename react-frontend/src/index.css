@@ -4,7 +4,12 @@
 
 @layer base {
   body {
-    @apply bg-surface text-slate-800 font-sans antialiased;
+    @apply bg-slate-50 text-slate-800 font-sans antialiased min-h-screen selection:bg-primary/20 selection:text-primary-dark;
+    background-image:
+      radial-gradient(at 40% 20%, hsla(199, 100%, 74%, 0.15) 0px, transparent 50%),
+      radial-gradient(at 80% 0%, hsla(189, 100%, 56%, 0.15) 0px, transparent 50%),
+      radial-gradient(at 0% 50%, hsla(199, 100%, 74%, 0.15) 0px, transparent 50%);
+    background-attachment: fixed;
   }
 }
 

@@ -2,13 +2,13 @@ import React, { useRef, useEffect, useState } from 'react';
 import { useChatStore } from '../../store/useChatStore';
 import { MessageBubble } from './MessageBubble';
 import { InputBox } from './InputBox';
-import { Loader2, Stethoscope } from 'lucide-react';
+import { Loader2, Stethoscope, Settings2 } from 'lucide-react';
 import type { Message } from '../../types/chat';
-import { sendMessage } from '../../services/api';
+import { sendMessage, callGeminiAPI, fetchRelatedImage } from '../../services/api';
 import { AnimatePresence, motion } from 'framer-motion';
 
 export const ChatArea: React.FC = () => {
-    const { chats, currentChatId, addMessage, createNewChat } = useChatStore();
+    const { chats, currentChatId, addMessage, createNewChat, geminiApiKey, patientData } = useChatStore();
 
     const [isLoading, setIsLoading] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -58,24 +58,66 @@ export const ChatArea: React.FC = () => {
         setIsLoading(true);
 
         try {
-            // Call simulated API
+            // 1. Fetch Context from Vector DB Backend
             const history = currentChat?.messages || [];
-            const { response } = await sendMessage(content, history);
+
+            // To provide a better UI, we can simulate typing or just show loading state.
+            const { response: dbResponse, context: dbContext } = await sendMessage(content, history);
+
+            // 2. Fetch a related image based on the query (to enhance UI)
+            const imageUrl = await fetchRelatedImage(content);
+
+            // 3. Prepare the Prompt for Gemini
+            if (!geminiApiKey) {
+                const errorMsg: Message = {
+                    id: crypto.randomUUID(),
+                    role: 'assistant',
+                    content: "Missing Gemini API Key. Please add it in the Settings panel.",
+                    timestamp: new Date().toISOString()
+                };
+                addMessage(chatId, errorMsg);
+                setIsLoading(false);
+                return;
+            }
+
+            const prompt = `
+You are an expert medical AI assistant designed to provide accurate, helpful, and empathetic responses.
+
+--- USER QUERY ---
+${content}
+
+--- PATIENT DATA / CONTEXT ---
+${patientData || "No specific patient data provided."}
+
+--- RELEVANT CLINICAL GUIDELINES & RESEARCH (From Vector DB) ---
+${dbContext && dbContext.length > 0 ? dbContext.join('\n\n') : dbResponse || "No specific vector DB context found."}
+
+--- INSTRUCTIONS ---
+Based on the User Query, the Patient Data, and the Research Evidence from the Vector DB provided above, generate a comprehensive, clear, and well-structured medical response. 
+Address the user directly. Be empathetic but professional. If the Vector DB information conflicts with common medical knowledge, note the discrepancy neutrally.
+If it is a general medical question, answer it fully. Use Markdown formatting (bullet points, bold text for emphasis) to make the text readable.
+If no relevant info is found, provide standard medical guidance but add a disclaimer.
+Keep the response detailed but strictly relevant.
+`;
+
+            // 4. Call Gemini API
+            const finalResponse = await callGeminiAPI(prompt, geminiApiKey);
 
             const botMsg: Message = {
                 id: crypto.randomUUID(),
                 role: 'assistant',
-                content: response,
+                content: finalResponse,
+                imageUrl: imageUrl || undefined,
                 timestamp: new Date().toISOString()
             };
 
             addMessage(chatId, botMsg);
-        } catch (error) {
+        } catch (error: any) {
             console.error(error);
             const errorMsg: Message = {
                 id: crypto.randomUUID(),
                 role: 'assistant',
-                content: "I'm having trouble connecting to the medical database. Please try again.",
+                content: `An error occurred: ${error.message || 'Unable to connect to service.'} Please try again.`,
                 timestamp: new Date().toISOString()
             };
             addMessage(chatId, errorMsg);
@@ -106,11 +148,19 @@ export const ChatArea: React.FC = () => {
                             </div>
                             <div className="space-y-2 max-w-md">
                                 <h1 className="text-2xl font-bold text-slate-800 tracking-tight">
-                                    Welcome to Mental Health Chatbot
+                                    Welcome to Medical Intelligence
                                 </h1>
-                                <p className="text-slate-500 leading-relaxed">
-                                    Your advanced AI assistant for medical research and patient consultation analysis.
+                                <p className="text-slate-500 leading-relaxed text-sm">
+                                    Your advanced AI assistant powered by Gemini and RAG (Vector DB) for clinical research and patient analysis.
                                 </p>
+                                {(!geminiApiKey || !patientData) && (
+                                    <div className="mt-4 p-3 bg-amber-50 text-amber-800 rounded-xl border border-amber-200 text-sm flex items-start gap-2 text-left">
+                                        <Settings2 size={16} className="mt-0.5 flex-shrink-0" />
+                                        <span>
+                                            <strong>Setup Recommended:</strong> Open Settings in the sidebar to add your Gemini API Key and Patient Data for context-aware responses.
+                                        </span>
+                                    </div>
+                                )}
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 w-full max-w-lg mt-8 text-left">

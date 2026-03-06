@@ -42,6 +42,15 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
                             ? "bg-primary text-white rounded-tr-sm"
                             : "bg-white border border-gray-100 text-slate-700 rounded-tl-sm shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)]"
                     )}>
+                        {message.imageUrl && !isUser && (
+                            <div className="mb-4 overflow-hidden rounded-xl border border-slate-100/50 shadow-sm bg-slate-50">
+                                <img
+                                    src={message.imageUrl}
+                                    alt="Reference"
+                                    className="w-full h-auto max-h-64 object-cover object-center transition-transform hover:scale-105 duration-700"
+                                />
+                            </div>
+                        )}
                         {isUser ? (
                             <p className="whitespace-pre-wrap">{message.content}</p>
                         ) : (

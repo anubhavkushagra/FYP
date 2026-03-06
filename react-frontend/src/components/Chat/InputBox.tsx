@@ -40,7 +40,7 @@ export const InputBox: React.FC<InputBoxProps> = ({ onSend, isLoading, disabled 
                 <motion.div
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
-                    className="relative bg-white border border-gray-200 shadow-[0_8px_30px_rgb(0,0,0,0.06)] rounded-2xl p-2.5 focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary transition-all duration-300"
+                    className="relative bg-white/80 backdrop-blur-2xl border border-white/50 shadow-[0_8px_30px_rgb(0,0,0,0.08)] rounded-3xl p-2.5 focus-within:ring-2 focus-within:ring-primary/30 focus-within:border-primary/50 transition-all duration-300"
                 >
                     <div className="flex items-end gap-3">
                         <textarea
@@ -69,8 +69,8 @@ export const InputBox: React.FC<InputBoxProps> = ({ onSend, isLoading, disabled 
                     </div>
                 </motion.div>
 
-                <p className="text-center text-[10px] sm:text-xs text-slate-400 font-medium">
-                    Mental Health Chatbot can make mistakes. Check important info.
+                <p className="text-center text-[10px] sm:text-xs text-slate-500/80 font-medium pb-2 backdrop-blur-sm">
+                    Medical Intelligence AI can make mistakes. Always consult professionals for important info.
                 </p>
             </div>
         </div >
