@@ -153,14 +153,6 @@ Keep the response detailed but strictly relevant.
                                 <p className="text-slate-500 leading-relaxed text-sm">
                                     Your advanced AI assistant powered by Gemini and RAG (Vector DB) for clinical research and patient analysis.
                                 </p>
-                                {(!geminiApiKey || !patientData) && (
-                                    <div className="mt-4 p-3 bg-amber-50 text-amber-800 rounded-xl border border-amber-200 text-sm flex items-start gap-2 text-left">
-                                        <Settings2 size={16} className="mt-0.5 flex-shrink-0" />
-                                        <span>
-                                            <strong>Setup Recommended:</strong> Open Settings in the sidebar to add your Gemini API Key and Patient Data for context-aware responses.
-                                        </span>
-                                    </div>
-                                )}
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 w-full max-w-lg mt-8 text-left">
